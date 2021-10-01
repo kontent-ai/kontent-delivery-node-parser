@@ -1,7 +1,7 @@
 import {
-    IRichTextResolverInput,
+    IRichTextHtmlResolverInput,
     RichTextItemIndexReferenceWrapper,
-    IResolvedRichTextElement,
+    IResolvedRichTextHtmlResult,
     ContentItemType,
     IFeaturedObjects,
     IImageObject,
@@ -13,10 +13,10 @@ import { Attribute, parseFragment, serialize, TextNode, Element } from 'parse5';
 import { getChildNodes, getLinkedItem, tryGetImage, tryGetLink } from './shared';
 
 export function resolveRichTextInternal(
-    input: IRichTextResolverInput,
+    input: IRichTextHtmlResolverInput,
     html: string,
     linkedItemIndex: RichTextItemIndexReferenceWrapper = new RichTextItemIndexReferenceWrapper(0)
-): IResolvedRichTextElement {
+): IResolvedRichTextHtmlResult {
     // create document
     const documentFragment = parseFragment(html);
 
@@ -42,7 +42,7 @@ export function resolveRichTextInternal(
 }
 
 function processRichTextElement(
-    input: IRichTextResolverInput,
+    input: IRichTextHtmlResolverInput,
     elements: Element[],
     result: IFeaturedObjects,
     linkedItemIndex: RichTextItemIndexReferenceWrapper
@@ -68,7 +68,7 @@ function processRichTextElement(
 }
 
 function processImage(
-    input: IRichTextResolverInput,
+    input: IRichTextHtmlResolverInput,
     element: Element,
     result: IFeaturedObjects,
     linkedItemIndex: RichTextItemIndexReferenceWrapper
@@ -128,7 +128,7 @@ function processImage(
 }
 
 function processLink(
-    input: IRichTextResolverInput,
+    input: IRichTextHtmlResolverInput,
     element: Element,
     result: IFeaturedObjects,
     linkedItemIndex: RichTextItemIndexReferenceWrapper
@@ -203,7 +203,7 @@ function processLink(
 }
 
 function processModularContentItem(
-    input: IRichTextResolverInput,
+    input: IRichTextHtmlResolverInput,
     element: Element,
     result: IFeaturedObjects,
     linkedItemIndex: RichTextItemIndexReferenceWrapper

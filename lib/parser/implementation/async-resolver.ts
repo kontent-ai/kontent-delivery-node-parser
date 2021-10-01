@@ -1,22 +1,22 @@
 import {
     RichTextItemIndexReferenceWrapper,
-    IResolvedRichTextElement,
+    IResolvedRichTextHtmlResult,
     ContentItemType,
     IFeaturedObjects,
     IImageObject,
     ILinkedItemContentObject,
     ILinkObject,
     parserConfiguration,
-    IRichTextResolverAsyncInput
+    IRichTextHtmlResolverAsyncInput
 } from '@kentico/kontent-delivery';
 import { Attribute, parseFragment, serialize, TextNode, Element } from 'parse5';
 import { getChildNodes, getLinkedItem, tryGetImage, tryGetLink } from './shared';
 
 export async function resolveRichTextInternalAsync(
-    input: IRichTextResolverAsyncInput,
+    input: IRichTextHtmlResolverAsyncInput,
     html: string,
     linkedItemIndex: RichTextItemIndexReferenceWrapper = new RichTextItemIndexReferenceWrapper(0)
-): Promise<IResolvedRichTextElement> {
+): Promise<IResolvedRichTextHtmlResult> {
     // create document
     const documentFragment = parseFragment(html);
 
@@ -42,7 +42,7 @@ export async function resolveRichTextInternalAsync(
 }
 
 async function processRichTextElementAsync(
-    input: IRichTextResolverAsyncInput,
+    input: IRichTextHtmlResolverAsyncInput,
     elements: Element[],
     result: IFeaturedObjects,
     linkedItemIndex: RichTextItemIndexReferenceWrapper
@@ -68,7 +68,7 @@ async function processRichTextElementAsync(
 }
 
 async function processImageAsync(
-    input: IRichTextResolverAsyncInput,
+    input: IRichTextHtmlResolverAsyncInput,
     element: Element,
     result: IFeaturedObjects,
     linkedItemIndex: RichTextItemIndexReferenceWrapper
@@ -128,7 +128,7 @@ async function processImageAsync(
 }
 
 async function processLinkAsync(
-    input: IRichTextResolverAsyncInput,
+    input: IRichTextHtmlResolverAsyncInput,
     element: Element,
     result: IFeaturedObjects,
     linkedItemIndex: RichTextItemIndexReferenceWrapper
@@ -203,7 +203,7 @@ async function processLinkAsync(
 }
 
 async function processModularContentItemAsync(
-    input: IRichTextResolverAsyncInput,
+    input: IRichTextHtmlResolverAsyncInput,
     element: Element,
     result: IFeaturedObjects,
     linkedItemIndex: RichTextItemIndexReferenceWrapper
