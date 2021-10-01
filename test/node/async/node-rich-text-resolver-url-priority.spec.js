@@ -40,7 +40,6 @@ describe('Async rich text resolver (URL priority)', () => {
   });
 
   it(`linked items should be resolved`, () => {
-    console.log('TEEEST', resolvedRichText);
     assert.ok(resolvedRichText.html.includes('<div class="xClass">Joel</div>'));
     assert.ok(resolvedRichText.html.includes('<div class="xClass">Tom</div>'));
   });
