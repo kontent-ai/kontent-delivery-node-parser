@@ -1,6 +1,6 @@
 {
     "name": "@kentico/kontent-delivery-html-parser-node-js",
-    "version": "0.0.1",
+    "version": "0.0.2-0",
     "repository": {
         "type": "git",
         "url": "https://github.com/Kentico/kontent-delivery-sdk-js"
@@ -21,11 +21,6 @@
     "module": "./dist/esm5/index.js",
     "es2015": "./dist/esm/index.js",
     "types": "./dist/cjs/index.d.ts",
-    "standard-version": {
-        "scripts": {
-            "postchangelog": "npm run set-sdk-version"
-        }
-    },
     "scripts": {
         "release": "standard-version",
         "prerelease": "standard-version --prerelease",
@@ -34,9 +29,9 @@
         "test:gh-actions": "npm run test:node",
         "test:node": "npm run build:commonjs && npx mocha -- \"test/node/**/*.js\" --timeout 15000",
         "test:all": "npm run test:node",
-        "new-patch": "npm version patch && npm run set-sdk-version && npm run check-version ",
-        "new-minor": "npm version minor && npm run set-sdk-version && npm run check-version ",
-        "new-major": "npm version major && npm run set-sdk-version && npm run check-version ",
+        "new-patch": "npm version patch && npm run check-version ",
+        "new-minor": "npm version minor && npm run check-version ",
+        "new-major": "npm version major && npm run check-version ",
         "prepublishOnly": "npm run build:all && npm run test:all",
         "webpack:dev": "webpack -- --mode development --config webpack.config.js --progress",
         "webpack:prod": "webpack -- --mode production --config webpack.config.js --progress",
