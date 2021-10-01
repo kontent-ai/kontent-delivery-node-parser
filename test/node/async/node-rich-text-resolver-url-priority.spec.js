@@ -1,48 +1,49 @@
 const KontentDelivery = require('@kentico/kontent-delivery');
 const assert = require('assert');
-const warriorJson = require('./data/fake-warrior-response.json');
-const nodeParserLib = require('../../dist/cjs/index');
-const setup = require('./setup/delivery-test-client');
+const warriorJson = require('../data/fake-warrior-response.json');
+const nodeParserLib = require('../../../dist/cjs/index');
+const setup = require('../setup/delivery-test-client');
 
-describe('Node rich text resolver (URL priority)', () => {
+describe('Async rich text resolver (URL priority)', () => {
 
   let response;
   let resolvedRichText;
 
   before(async () => {
     response = (await setup.getDeliveryClientWithJson(warriorJson).item('x').toPromise()).data;
-    resolvedRichText = nodeParserLib.nodeRichTextResolver.resolveRichText({
+    resolvedRichText = await nodeParserLib.nodeRichTextResolver.resolveRichTextAsync({
       element: response.item.elements.plot,
       linkedItems: KontentDelivery.linkedItemsHelper.convertLinkedItemsToArray(response.linkedItems),
-      imageResolver: (image) => {
-        return {
+      imageResolver: async (image) => {
+        return await setup.toPromise({
           imageUrl: `xImageUrl-${image?.imageId}`
-        };
+        });
       },
-      urlResolver: (link) => {
-        return {
+      urlResolver: async (link) => {
+        return await setup.toPromise({
           linkUrl: `xLinkUrl-${link?.link?.urlSlug}`
-        };
+        });
       },
-      contentItemResolver: (contentItem) => {
+      contentItemResolver: async (contentItem) => {
         if (contentItem && contentItem.system.type === 'actor') {
           const actor = contentItem;
-          return {
+          return await setup.toPromise({
             contentItemHtml: `<div class="xClass">${actor.elements.firstName.value}</div>`
-          };
+          });
         }
 
-        return {
+        return await setup.toPromise({
           contentItemHtml: ''
-        };
+        });
       }
     });
   });
 
   it(`linked items should be resolved`, () => {
+    console.log('TEEEST', resolvedRichText);
     assert.ok(resolvedRichText.html.includes('<div class="xClass">Joel</div>'));
     assert.ok(resolvedRichText.html.includes('<div class="xClass">Tom</div>'));
-});
+  });
 
   it('images should be resolved', () => {
     assert.ok(resolvedRichText.html.includes('img src="xImageUrl-22504ba8-2075-48fa-9d4f-8fce3de1754a" data-asset-id="22504ba8-2075-48fa-9d4f-8fce3de1754a" data-image-id="22504ba8-2075-48fa-9d4f-8fce3de1754a" alt="">'));

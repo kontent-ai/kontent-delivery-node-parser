@@ -22,6 +22,12 @@ const defaultPropertyNameResolver = (type, element) => {
 };
 
 
+module.exports.toPromise = function (data) {
+    return new Promise((resolve, reject) => {
+        resolve(data);
+    });
+}
+
 module.exports.getTestDeliveryClient = function (config) {
     return createDeliveryClient(
         config
