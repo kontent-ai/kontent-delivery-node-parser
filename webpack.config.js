@@ -7,7 +7,7 @@ const isProd = (args) => {
 
 const outputFolder = (args) => path.resolve(__dirname, 'dist/bundles');
 const bundleFilename = (args) => {
-    return 'kontent-delivery.umd' + (isProd(args) ? '.min.js' : '.js');
+    return 'kontent-delivery-html-parser-node.umd' + (isProd(args) ? '.min.js' : '.js');
 }
 
 module.exports = (env, args) => ({
@@ -23,7 +23,7 @@ module.exports = (env, args) => ({
         filename: bundleFilename(args),
         libraryTarget: 'umd',
         umdNamedDefine: true,
-        library: 'kontentDelivery'
+        library: 'kontentDeliveryHtmlParserNode'
     },
     devtool: 'source-map',
     module: {
