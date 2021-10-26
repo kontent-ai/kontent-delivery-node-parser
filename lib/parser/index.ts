@@ -1,1 +1,2 @@
-export * from './node-rich-text-resolver';
+export * from './implementation/node-sync-parser';
+export * from './implementation/node-async-parser';

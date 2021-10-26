@@ -1,5 +1,14 @@
-import { IContentItem, Elements, IRichTextImage, ElementType, ILink } from '@kentico/kontent-delivery';
-import { DocumentFragment, Element } from 'parse5';
+import {
+    IContentItem,
+    Elements,
+    IRichTextImage,
+    ElementType,
+    ILink,
+    IParserElement,
+    IParserElementAttribute
+} from '@kentico/kontent-delivery';
+import { DocumentFragment, Element, parseFragment, serialize, Node } from 'parse5';
+import * as striptags from 'striptags';
 
 export function getChildNodes(documentFragment: DocumentFragment | Element): Element[] {
     return documentFragment.childNodes as Element[];
@@ -27,7 +36,7 @@ export function tryGetImage(
         for (const linkedItem of linkedItems) {
             for (const elementKey of Object.keys(linkedItem.elements)) {
                 const element = linkedItem.elements[elementKey];
-                if (element.type === ElementType.RichText) {
+                if (element && element.type === ElementType.RichText) {
                     const richTextElement = element as Elements.RichTextElement;
                     const richTextElementImage = richTextElement.images.find((m) => m.imageId === imageId);
                     if (richTextElementImage) {
@@ -56,7 +65,7 @@ export function tryGetLink(
         for (const linkedItem of linkedItems) {
             for (const elementKey of Object.keys(linkedItem.elements)) {
                 const element = linkedItem.elements[elementKey];
-                if (element.type === ElementType.RichText) {
+                if (element && element.type === ElementType.RichText) {
                     const richTextElement = element as Elements.RichTextElement;
                     const richTextElementLink = richTextElement.links.find((m) => m.linkId === linkId);
                     if (richTextElementLink) {
@@ -68,4 +77,74 @@ export function tryGetLink(
     }
 
     return undefined;
+}
+
+export function convertToParserElement(node: Node): IParserElement {
+    const attributes: IParserElementAttribute[] = [];
+
+    let tagName: string = node.nodeName;
+
+    if ((node as Element).attrs) {
+        const element = node as Element;
+
+        tagName = element.tagName;
+
+        for (let i = 0; i < element.attrs.length; i++) {
+            const attribute = element.attrs[i];
+
+            attributes.push({
+                name: attribute.name,
+                value: attribute.value
+            });
+        }
+    }
+
+    return {
+        tag: tagName,
+        setAttribute: (attributeName, attributeValue) => {
+            if ((node as Element).attrs) {
+                const element = node as Element;
+                const attribute = element.attrs.find((m) => m.name.toLowerCase() === attributeName.toLowerCase());
+                if (attribute) {
+                    attribute.value = attributeValue ?? '';
+                } else {
+                    element.attrs.push({
+                        name: attributeName,
+                        value: attributeValue ?? ''
+                    });
+                }
+            }
+        },
+        setInnerHtml: (newHtml) => {
+            if ((node as Element).attrs) {
+                const element = node as Element;
+                // get serialized set of nodes from HTML
+                const serializedChildNodes = parseFragment(newHtml);
+
+                // add child nodes
+                element.childNodes = serializedChildNodes.childNodes;
+            }
+        },
+        setOuterHtml: (newHtml) => {
+            if ((node as Element).attrs) {
+                const element = node as Element;
+                const rootNodes = parseFragment(newHtml).childNodes as Element[];
+
+                if (rootNodes.length !== 1) {
+                    throw Error(`Invalid number of root nodes.`);
+                }
+
+                const rootNode = rootNodes[0];
+                const childNodes = rootNode.childNodes;
+
+                element.attrs = rootNode.attrs; //  preserve attributes from top node
+                element.childNodes = childNodes; // set resolved inner html
+            }
+        },
+        html: serialize(node),
+        text: striptags(serialize(node)),
+        attributes: attributes,
+        parentElement: (node as Element).parentNode ? convertToParserElement((node as Element).parentNode) : undefined,
+        sourceElement: node
+    };
 }

@@ -11,20 +11,21 @@ describe('Rich text resolver (URL priority)', () => {
 
   before(async () => {
     response = (await setup.getDeliveryClientWithJson(warriorJson).item('x').toPromise()).data;
-    resolvedRichText = nodeParserLib.nodeRichTextResolver.resolveRichText({
+    resolvedRichText = KontentDelivery.richTextHtmlResolver.resolveRichText({
+      parser: nodeParserLib.nodeParser,
       element: response.item.elements.plot,
       linkedItems: KontentDelivery.linkedItemsHelper.convertLinkedItemsToArray(response.linkedItems),
-      imageResolver: (image) => {
+      imageResolver: (imageId, image) => {
         return {
           imageUrl: `xImageUrl-${image?.imageId}`
         };
       },
-      urlResolver: (link) => {
+      urlResolver: (linkId, linkText, link) => {
         return {
-          linkUrl: `xLinkUrl-${link?.link?.urlSlug}`
+          linkUrl: `xLinkUrl-${link?.urlSlug}`
         };
       },
-      contentItemResolver: (contentItem) => {
+      contentItemResolver: (codename, contentItem) => {
         if (contentItem && contentItem.system.type === 'actor') {
           const actor = contentItem;
           return {
@@ -40,9 +41,10 @@ describe('Rich text resolver (URL priority)', () => {
   });
 
   it(`linked items should be resolved`, () => {
-    assert.ok(resolvedRichText.html.includes('<div class="xClass">Joel</div>'));
-    assert.ok(resolvedRichText.html.includes('<div class="xClass">Tom</div>'));
-});
+    assert.ok(resolvedRichText.html.includes('<object type="application/kenticocloud" data-type="item" data-rel="link" data-codename="tom_hardy" data-sdk-resolved="1"><div class="xClass">Tom</div></object>'));
+    assert.ok(resolvedRichText.html.includes('<object type="application/kenticocloud" data-type="item" data-rel="link" data-codename="joel_edgerton" data-sdk-resolved="1"><div class="xClass">Joel</div></object>'));
+    assert.ok(resolvedRichText.html.includes('<object type="application/kenticocloud" data-type="item" data-rel="component" data-codename="ec9813f6_194d_018f_e20c_36855fb6e600" data-sdk-resolved="1"><div class="xClass">Jennifer </div></object>'));
+  });
 
   it('images should be resolved', () => {
     assert.ok(resolvedRichText.html.includes('img src="xImageUrl-22504ba8-2075-48fa-9d4f-8fce3de1754a" data-asset-id="22504ba8-2075-48fa-9d4f-8fce3de1754a" data-image-id="22504ba8-2075-48fa-9d4f-8fce3de1754a" alt="">'));

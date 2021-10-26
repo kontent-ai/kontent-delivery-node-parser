@@ -11,20 +11,21 @@ describe('Async rich text resolver (URL priority)', () => {
 
   before(async () => {
     response = (await setup.getDeliveryClientWithJson(warriorJson).item('x').toPromise()).data;
-    resolvedRichText = await nodeParserLib.nodeRichTextResolver.resolveRichTextAsync({
+    resolvedRichText = await KontentDelivery.richTextHtmlResolver.resolveRichTextAsync({
+      parser: nodeParserLib.nodeParserAsync,
       element: response.item.elements.plot,
       linkedItems: KontentDelivery.linkedItemsHelper.convertLinkedItemsToArray(response.linkedItems),
-      imageResolver: async (image) => {
+      imageResolverAsync: async (imageId, image) => {
         return await setup.toPromise({
           imageUrl: `xImageUrl-${image?.imageId}`
         });
       },
-      urlResolver: async (link) => {
+      urlResolverAsync: async (linkId, linkText, link) => {
         return await setup.toPromise({
-          linkUrl: `xLinkUrl-${link?.link?.urlSlug}`
+          linkUrl: `xLinkUrl-${link?.urlSlug}`
         });
       },
-      contentItemResolver: async (contentItem) => {
+      contentItemResolverAsync: async (codename, contentItem) => {
         if (contentItem && contentItem.system.type === 'actor') {
           const actor = contentItem;
           return await setup.toPromise({
@@ -40,8 +41,9 @@ describe('Async rich text resolver (URL priority)', () => {
   });
 
   it(`linked items should be resolved`, () => {
-    assert.ok(resolvedRichText.html.includes('<div class="xClass">Joel</div>'));
-    assert.ok(resolvedRichText.html.includes('<div class="xClass">Tom</div>'));
+    assert.ok(resolvedRichText.html.includes('<object type="application/kenticocloud" data-type="item" data-rel="link" data-codename="tom_hardy" data-sdk-resolved="1"><div class="xClass">Tom</div></object>'));
+    assert.ok(resolvedRichText.html.includes('<object type="application/kenticocloud" data-type="item" data-rel="link" data-codename="joel_edgerton" data-sdk-resolved="1"><div class="xClass">Joel</div></object>'));
+    assert.ok(resolvedRichText.html.includes('<object type="application/kenticocloud" data-type="item" data-rel="component" data-codename="ec9813f6_194d_018f_e20c_36855fb6e600" data-sdk-resolved="1"><div class="xClass">Jennifer </div></object>'));
   });
 
   it('images should be resolved', () => {
