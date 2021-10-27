@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.1-1](https://github.com/Kentico/kontent-delivery-node-parser/compare/v0.0.2-1...v0.0.1-1) (2021-10-27)
+
+
+### Features
+
+* updates readme, improves parser, adds more tests ([253b0d3](https://github.com/Kentico/kontent-delivery-node-parser/commit/253b0d3fb07f8bc1bbeb445b27b06ad048b53b10))
+
 ### [0.0.1-0](https://github.com/Kentico/kontent-delivery-node-parser/compare/v0.0.2-1...v0.0.1-0) (2021-10-27)
 
 
