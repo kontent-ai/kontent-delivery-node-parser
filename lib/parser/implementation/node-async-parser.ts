@@ -1,29 +1,29 @@
 import {
     ContentItemType,
     Elements,
+    IAsyncParser,
     IContentItem,
     IImageObject,
     ILinkedItemContentObject,
     ILinkObject,
     IParsedObjects,
-    IAsyncParser,
+    IAsyncParseResolvers,
+    IParserResult,
     IResolvedRichTextHtmlResult,
     ParsedItemIndexReferenceWrapper,
-    parserConfiguration,
-    IAsyncParseResolvers,
-    IParserResult
+    parserConfiguration
 } from '@kentico/kontent-delivery';
 import { parseFragment, TextNode, Attribute, serialize, DocumentFragment, Element, Node } from 'parse5';
 import { getChildNodes, tryGetImage, tryGetLink, getLinkedItem, convertToParserElement } from './shared';
 
-export class NodeParserAsync implements IAsyncParser<string> {
+export class AsyncNodeParser implements IAsyncParser<string> {
     async parseAsync(
         html: string,
         mainRichTextElement: Elements.RichTextElement,
         resolvers: IAsyncParseResolvers,
         linkedItems: IContentItem[]
     ): Promise<IParserResult<string>> {
-        const result = await this.resolveRichTextInternalAsync(
+        const result = await this.parseInternalAsync(
             mainRichTextElement,
             html,
             resolvers,
@@ -44,7 +44,7 @@ export class NodeParserAsync implements IAsyncParser<string> {
         };
     }
 
-    private async resolveRichTextInternalAsync(
+    private async parseInternalAsync(
         mainRichTextElement: Elements.RichTextElement,
         html: string,
         resolvers: IAsyncParseResolvers,
@@ -56,7 +56,7 @@ export class NodeParserAsync implements IAsyncParser<string> {
         // create document
         const documentFragment: DocumentFragment = parseFragment(html);
 
-        const result = await this.processRichTextElementAsync(
+        const result = await this.processNodesAsync(
             mainRichTextElement,
             getChildNodes(documentFragment),
             resolvers,
@@ -77,7 +77,7 @@ export class NodeParserAsync implements IAsyncParser<string> {
         };
     }
 
-    private async processRichTextElementAsync(
+    private async processNodesAsync(
         mainRichTextElement: Elements.RichTextElement,
         nodes: Node[],
         resolvers: IAsyncParseResolvers,
@@ -90,63 +90,63 @@ export class NodeParserAsync implements IAsyncParser<string> {
             // there are no more elements
         } else {
             for (const node of nodes) {
-                if ((node as Element).attrs) {
-                    const element = node as Element;
-                    const attributes = element.attrs;
-                    const dataTypeAttribute = attributes.find(
-                        (m) => m.name === parserConfiguration.modularContentElementData.dataType
+                const element = node as Element;
+                const attributes: Attribute[] = element.attrs ? element.attrs : [];
+
+                await resolvers.elementResolverAsync(convertToParserElement(node));
+
+                const dataTypeAttribute = attributes.find(
+                    (m) => m.name === parserConfiguration.modularContentElementData.dataType
+                );
+                if (dataTypeAttribute && dataTypeAttribute.value === 'item') {
+                    await this.processModularContentItemAsync(
+                        mainRichTextElement,
+                        element,
+                        resolvers,
+                        parsedItems,
+                        linkedItems,
+                        linkedItemIndex
                     );
-                    if (dataTypeAttribute && dataTypeAttribute.value === 'item') {
-                        await this.processModularContentItemAsync(
-                            mainRichTextElement,
-                            element,
-                            resolvers,
-                            parsedItems,
-                            linkedItems,
-                            linkedItemIndex
-                        );
-                    } else if (
-                        node.nodeName.toLowerCase() === parserConfiguration.linkElementData.nodeName.toLowerCase()
-                    ) {
-                        await this.processLinkAsync(
-                            mainRichTextElement,
-                            element,
-                            resolvers,
-                            parsedItems,
-                            linkedItems,
-                            linkedItemIndex
-                        );
-                    } else if (
-                        node.nodeName.toLowerCase() === parserConfiguration.imageElementData.nodeName.toLowerCase()
-                    ) {
-                        await this.processImageAsync(
-                            mainRichTextElement,
-                            element,
-                            resolvers,
-                            parsedItems,
-                            linkedItems,
-                            linkedItemIndex
-                        );
-                    } else {
-                        // process generic elements
-                        await resolvers.genericElementResolverAsync(convertToParserElement(element));
+                } else if (node.nodeName.toLowerCase() === parserConfiguration.linkElementData.nodeName.toLowerCase()) {
+                    await this.processLinkAsync(
+                        mainRichTextElement,
+                        element,
+                        resolvers,
+                        parsedItems,
+                        linkedItems,
+                        linkedItemIndex
+                    );
+                } else if (
+                    node.nodeName.toLowerCase() === parserConfiguration.imageElementData.nodeName.toLowerCase()
+                ) {
+                    await this.processImageAsync(
+                        mainRichTextElement,
+                        element,
+                        resolvers,
+                        parsedItems,
+                        linkedItems,
+                        linkedItemIndex
+                    );
+                } else {
+                    // process generic elements
+                    const innerHtml = serialize(node);
+                    if (innerHtml) {
+                        // only process node if its not empty
+                        await resolvers.genericElementResolverAsync(convertToParserElement(node));
                     }
                 }
 
                 // recursively process all childs
-                if ((node as Element).childNodes) {
-                    const element = node as Element;
-                    if (element.childNodes && element.childNodes.length) {
-                        await this.processRichTextElementAsync(
-                            mainRichTextElement,
-                            getChildNodes(element),
-                            resolvers,
-                            parsedItems,
-                            linkedItems,
-                            linkedItemIndex,
-                            parentElement
-                        );
-                    }
+                if (element.childNodes && element.childNodes.length) {
+                    await this.processNodesAsync(
+                        mainRichTextElement,
+                        getChildNodes(element),
+                        resolvers,
+                        parsedItems,
+                        linkedItems,
+                        linkedItemIndex,
+                        parentElement
+                    );
                 }
             }
         }
@@ -253,10 +253,9 @@ export class NodeParserAsync implements IAsyncParser<string> {
         const dataTypeAttribute = attributes.find(
             (m) => m.name === parserConfiguration.modularContentElementData.dataType
         );
-        const resolvedDataAttribute = attributes.find((m) => m.name === parserConfiguration.resolvedAttribute);
 
         // process linked items
-        if (dataTypeAttribute && !resolvedDataAttribute) {
+        if (dataTypeAttribute) {
             // get codename of the modular content
             const dataCodenameAttribute: Attribute | undefined = attributes.find(
                 (m) => m.name === parserConfiguration.modularContentElementData.dataCodename
@@ -313,4 +312,4 @@ export class NodeParserAsync implements IAsyncParser<string> {
     }
 }
 
-export const nodeParserAsync = new NodeParserAsync();
+export const asyncNodeParser = new AsyncNodeParser();

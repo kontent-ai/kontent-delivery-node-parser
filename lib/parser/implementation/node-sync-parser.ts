@@ -23,7 +23,7 @@ export class NodeParser implements IParser<string> {
         resolvers: IParseResolvers,
         linkedItems: IContentItem[]
     ): IParserResult<string> {
-        const result = this.resolveRichTextInternal(
+        const result = this.parseInternal(
             mainRichTextElement,
             html,
             resolvers,
@@ -44,7 +44,7 @@ export class NodeParser implements IParser<string> {
         };
     }
 
-    private resolveRichTextInternal(
+    private parseInternal(
         mainRichTextElement: Elements.RichTextElement,
         html: string,
         resolvers: IParseResolvers,
@@ -56,7 +56,7 @@ export class NodeParser implements IParser<string> {
         // create document
         const documentFragment: DocumentFragment = parseFragment(html);
 
-        const result = this.processRichTextElement(
+        const result = this.processNodes(
             mainRichTextElement,
             getChildNodes(documentFragment),
             resolvers,
@@ -77,7 +77,7 @@ export class NodeParser implements IParser<string> {
         };
     }
 
-    private processRichTextElement(
+    private processNodes(
         mainRichTextElement: Elements.RichTextElement,
         nodes: Node[],
         resolvers: IParseResolvers,
@@ -90,63 +90,63 @@ export class NodeParser implements IParser<string> {
             // there are no more elements
         } else {
             for (const node of nodes) {
-                if ((node as Element).attrs) {
-                    const element = node as Element;
-                    const attributes = element.attrs;
-                    const dataTypeAttribute = attributes.find(
-                        (m) => m.name === parserConfiguration.modularContentElementData.dataType
+                const element = node as Element;
+                const attributes: Attribute[] = element.attrs ? element.attrs : [];
+
+                resolvers.elementResolver(convertToParserElement(node));
+
+                const dataTypeAttribute = attributes.find(
+                    (m) => m.name === parserConfiguration.modularContentElementData.dataType
+                );
+                if (dataTypeAttribute && dataTypeAttribute.value === 'item') {
+                    this.processModularContentItem(
+                        mainRichTextElement,
+                        element,
+                        resolvers,
+                        parsedItems,
+                        linkedItems,
+                        linkedItemIndex
                     );
-                    if (dataTypeAttribute && dataTypeAttribute.value === 'item') {
-                        this.processModularContentItem(
-                            mainRichTextElement,
-                            element,
-                            resolvers,
-                            parsedItems,
-                            linkedItems,
-                            linkedItemIndex
-                        );
-                    } else if (
-                        node.nodeName.toLowerCase() === parserConfiguration.linkElementData.nodeName.toLowerCase()
-                    ) {
-                        this.processLink(
-                            mainRichTextElement,
-                            element,
-                            resolvers,
-                            parsedItems,
-                            linkedItems,
-                            linkedItemIndex
-                        );
-                    } else if (
-                        node.nodeName.toLowerCase() === parserConfiguration.imageElementData.nodeName.toLowerCase()
-                    ) {
-                        this.processImage(
-                            mainRichTextElement,
-                            element,
-                            resolvers,
-                            parsedItems,
-                            linkedItems,
-                            linkedItemIndex
-                        );
-                    } else {
-                        // process generic elements
-                        resolvers.genericElementResolver(convertToParserElement(element));
+                } else if (node.nodeName.toLowerCase() === parserConfiguration.linkElementData.nodeName.toLowerCase()) {
+                    this.processLink(
+                        mainRichTextElement,
+                        element,
+                        resolvers,
+                        parsedItems,
+                        linkedItems,
+                        linkedItemIndex
+                    );
+                } else if (
+                    node.nodeName.toLowerCase() === parserConfiguration.imageElementData.nodeName.toLowerCase()
+                ) {
+                    this.processImage(
+                        mainRichTextElement,
+                        element,
+                        resolvers,
+                        parsedItems,
+                        linkedItems,
+                        linkedItemIndex
+                    );
+                } else {
+                    // process generic elements
+                    const innerHtml = serialize(node);
+                    if (innerHtml) {
+                        // only process node if its not empty
+                        resolvers.genericElementResolver(convertToParserElement(node));
                     }
                 }
 
                 // recursively process all childs
-                if ((node as Element).childNodes) {
-                    const element = node as Element;
-                    if (element.childNodes && element.childNodes.length) {
-                        this.processRichTextElement(
-                            mainRichTextElement,
-                            getChildNodes(element),
-                            resolvers,
-                            parsedItems,
-                            linkedItems,
-                            linkedItemIndex,
-                            parentElement
-                        );
-                    }
+                if (element.childNodes && element.childNodes.length) {
+                    this.processNodes(
+                        mainRichTextElement,
+                        getChildNodes(element),
+                        resolvers,
+                        parsedItems,
+                        linkedItems,
+                        linkedItemIndex,
+                        parentElement
+                    );
                 }
             }
         }
@@ -253,10 +253,9 @@ export class NodeParser implements IParser<string> {
         const dataTypeAttribute = attributes.find(
             (m) => m.name === parserConfiguration.modularContentElementData.dataType
         );
-        const resolvedDataAttribute = attributes.find((m) => m.name === parserConfiguration.resolvedAttribute);
 
         // process linked items
-        if (dataTypeAttribute && !resolvedDataAttribute) {
+        if (dataTypeAttribute) {
             // get codename of the modular content
             const dataCodenameAttribute: Attribute | undefined = attributes.find(
                 (m) => m.name === parserConfiguration.modularContentElementData.dataCodename

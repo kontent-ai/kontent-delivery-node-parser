@@ -11,8 +11,7 @@ describe('Async rich text resolver (HTML priority)', () => {
 
   before(async () => {
     response = (await setup.getDeliveryClientWithJson(warriorJson).item('x').toPromise()).data;
-    resolvedRichText = await KontentDelivery.richTextHtmlResolver.resolveRichTextAsync({
-      parser: nodeParserLib.nodeParserAsync,
+    resolvedRichText = await KontentDelivery.createAsyncRichTextHtmlResolver(nodeParserLib.asyncNodeParser).resolveRichTextAsync({
       element: response.item.elements.plot,
       linkedItems: KontentDelivery.linkedItemsHelper.convertLinkedItemsToArray(response.linkedItems),
       imageResolverAsync: async (imageId, image) => {
