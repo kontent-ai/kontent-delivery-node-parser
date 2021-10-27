@@ -6,21 +6,21 @@ import {
     ILinkedItemContentObject,
     ILinkObject,
     IParsedObjects,
-    IParserAsync,
-    IParseResolversAsync,
-    IParserResult,
+    IAsyncParser,
     IResolvedRichTextHtmlResult,
     ParsedItemIndexReferenceWrapper,
-    parserConfiguration
+    parserConfiguration,
+    IAsyncParseResolvers,
+    IParserResult
 } from '@kentico/kontent-delivery';
 import { parseFragment, TextNode, Attribute, serialize, DocumentFragment, Element, Node } from 'parse5';
 import { getChildNodes, tryGetImage, tryGetLink, getLinkedItem, convertToParserElement } from './shared';
 
-export class NodeParserAsync implements IParserAsync<string> {
+export class NodeParserAsync implements IAsyncParser<string> {
     async parseAsync(
         html: string,
         mainRichTextElement: Elements.RichTextElement,
-        resolvers: IParseResolversAsync,
+        resolvers: IAsyncParseResolvers,
         linkedItems: IContentItem[]
     ): Promise<IParserResult<string>> {
         const result = await this.resolveRichTextInternalAsync(
@@ -47,7 +47,7 @@ export class NodeParserAsync implements IParserAsync<string> {
     private async resolveRichTextInternalAsync(
         mainRichTextElement: Elements.RichTextElement,
         html: string,
-        resolvers: IParseResolversAsync,
+        resolvers: IAsyncParseResolvers,
         parsedItems: IParsedObjects,
         linkedItems: IContentItem[],
         linkedItemIndex: ParsedItemIndexReferenceWrapper = new ParsedItemIndexReferenceWrapper(0),
@@ -80,7 +80,7 @@ export class NodeParserAsync implements IParserAsync<string> {
     private async processRichTextElementAsync(
         mainRichTextElement: Elements.RichTextElement,
         nodes: Node[],
-        resolvers: IParseResolversAsync,
+        resolvers: IAsyncParseResolvers,
         parsedItems: IParsedObjects,
         linkedItems: IContentItem[],
         linkedItemIndex: ParsedItemIndexReferenceWrapper = new ParsedItemIndexReferenceWrapper(0),
@@ -157,7 +157,7 @@ export class NodeParserAsync implements IParserAsync<string> {
     private async processImageAsync(
         mainRichTextElement: Elements.RichTextElement,
         element: Element,
-        resolvers: IParseResolversAsync,
+        resolvers: IAsyncParseResolvers,
         parsedItems: IParsedObjects,
         linkedItems: IContentItem[],
         linkedItemIndex: ParsedItemIndexReferenceWrapper
@@ -197,7 +197,7 @@ export class NodeParserAsync implements IParserAsync<string> {
     private async processLinkAsync(
         mainRichTextElement: Elements.RichTextElement,
         element: Element,
-        resolvers: IParseResolversAsync,
+        resolvers: IAsyncParseResolvers,
         parsedItems: IParsedObjects,
         linkedItems: IContentItem[],
         linkedItemIndex: ParsedItemIndexReferenceWrapper
@@ -243,7 +243,7 @@ export class NodeParserAsync implements IParserAsync<string> {
     private async processModularContentItemAsync(
         mainRichTextElement: Elements.RichTextElement,
         element: Element,
-        resolvers: IParseResolversAsync,
+        resolvers: IAsyncParseResolvers,
         parsedItems: IParsedObjects,
         linkedItems: IContentItem[],
         linkedItemIndex: ParsedItemIndexReferenceWrapper
