@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/Kentico/kontent-delivery-node-parser/compare/v2.0.0...v2.0.1) (2022-06-24)
+
+
+### Bug Fixes
+
+* Fixes child nodes condition when parsing link text (https://github.com/Kentico/kontent-delivery-sdk-js/issues/351#issuecomment-1165462603) ([2be8840](https://github.com/Kentico/kontent-delivery-node-parser/commit/2be884024d061d2e53cea51ff0425d1fe0c61346)), closes [/github.com/Kentico/kontent-delivery-sdk-js/issues/351#issuecomment-1165462603](https://github.com/Kentico//github.com/Kentico/kontent-delivery-sdk-js/issues/351/issues/issuecomment-1165462603)
+
 ## [2.0.0](https://github.com/Kentico/kontent-delivery-node-parser/compare/v2.0.0-0...v2.0.0) (2022-06-24)
 
 ### ⚠ BREAKING CHANGES
