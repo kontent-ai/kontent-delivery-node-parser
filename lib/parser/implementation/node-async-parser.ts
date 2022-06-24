@@ -230,13 +230,13 @@ export class AsyncNodeParser implements IAsyncParser<string> {
         // get original link text (the one inside <a> tag from response)
         let originalLinkText: string | undefined = undefined;
 
-        if (element.childNodes.length) {
-            // handle cases when link is formatted
-            originalLinkText = striptags(serialize(element));
-        } else {
+        if (element.childNodes?.length === 1) {
             // link is not formatted, it's a single text node
             const linkTextNode = element.childNodes[0] as TextNode;
             originalLinkText = linkTextNode.value;
+        } else {
+            // handle cases when link is formatted
+            originalLinkText = striptags(serialize(element));
         }
 
         await resolvers.urlResolverAsync(
