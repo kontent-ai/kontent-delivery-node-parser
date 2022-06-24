@@ -19,7 +19,7 @@ import { getChildNodes, tryGetImage, tryGetLink, getLinkedItem, convertToParserE
 import { parseFragment, serialize } from 'parse5';
 import { Element, Node, TextNode, DocumentFragment, ParentNode } from 'parse5/dist/cjs/tree-adapters/default';
 import { Attribute } from 'parse5/dist/cjs/common/token';
-import striptags = require('striptags');
+import * as striptags from 'striptags';
 
 export class AsyncNodeParser implements IAsyncParser<string> {
     async parseAsync(
