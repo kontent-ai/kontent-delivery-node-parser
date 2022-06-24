@@ -13,8 +13,11 @@ import {
     ParsedItemIndexReferenceWrapper,
     parserConfiguration
 } from '@kentico/kontent-delivery';
-import { parseFragment, TextNode, Attribute, serialize, DocumentFragment, Element, Node } from 'parse5';
 import { getChildNodes, tryGetImage, tryGetLink, getLinkedItem, convertToParserElement } from './shared';
+
+import { parseFragment, serialize } from 'parse5';
+import { Element, Node, TextNode, DocumentFragment, ParentNode } from 'parse5/dist/cjs/tree-adapters/default';
+import { Attribute } from 'parse5/dist/cjs/common/token';
 
 export class NodeParser implements IParser<string> {
     parse(
@@ -93,7 +96,7 @@ export class NodeParser implements IParser<string> {
                 const element = node as Element;
                 const attributes: Attribute[] = element.attrs ? element.attrs : [];
 
-                resolvers.elementResolver(convertToParserElement(node));
+                resolvers.elementResolver(convertToParserElement(node as ParentNode));
 
                 const dataTypeAttribute = attributes.find(
                     (m) => m.name === parserConfiguration.modularContentElementData.dataType
@@ -129,10 +132,8 @@ export class NodeParser implements IParser<string> {
                     );
                 } else {
                     // process generic elements
-                    const innerHtml = serialize(node);
-                    if (innerHtml) {
-                        // only process node if its not empty
-                        resolvers.genericElementResolver(convertToParserElement(node));
+                    if (node) {
+                        resolvers.genericElementResolver(convertToParserElement(node as ParentNode));
                     }
                 }
 
@@ -140,7 +141,7 @@ export class NodeParser implements IParser<string> {
                 if (element.childNodes && element.childNodes.length) {
                     this.processNodes(
                         mainRichTextElement,
-                        getChildNodes(element),
+                        getChildNodes(element as DocumentFragment),
                         resolvers,
                         parsedItems,
                         linkedItems,
@@ -163,6 +164,7 @@ export class NodeParser implements IParser<string> {
         linkedItemIndex: ParsedItemIndexReferenceWrapper
     ): void {
         const attributes = element.attrs;
+
 
         if (element.nodeName !== parserConfiguration.imageElementData.nodeName) {
             // node is not an image
@@ -187,6 +189,7 @@ export class NodeParser implements IParser<string> {
         parsedItems.images.push(imageObject);
 
         // resolve image
+
         resolvers.imageResolver(
             convertToParserElement(element),
             imageObject.imageId,

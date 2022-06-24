@@ -9,7 +9,7 @@ describe('Node rich text object resolver', () => {
   let response;
   let resolvedData;
 
-  const expectedRootChildrenNodes = 12;
+  const expectedRootChildrenNodes = 23;
 
   before(async () => {
     response = (await setup.getDeliveryClientWithJson(warriorJson).item('x').toPromise()).data;

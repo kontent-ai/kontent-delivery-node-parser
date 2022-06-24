@@ -13,8 +13,12 @@ import {
     ParsedItemIndexReferenceWrapper,
     parserConfiguration
 } from '@kentico/kontent-delivery';
-import { parseFragment, TextNode, Attribute, serialize, DocumentFragment, Element, Node } from 'parse5';
+
 import { getChildNodes, tryGetImage, tryGetLink, getLinkedItem, convertToParserElement } from './shared';
+
+import { parseFragment, serialize } from 'parse5';
+import { Element, Node, TextNode, DocumentFragment, ParentNode } from 'parse5/dist/cjs/tree-adapters/default';
+import { Attribute } from 'parse5/dist/cjs/common/token';
 
 export class AsyncNodeParser implements IAsyncParser<string> {
     async parseAsync(
@@ -93,7 +97,7 @@ export class AsyncNodeParser implements IAsyncParser<string> {
                 const element = node as Element;
                 const attributes: Attribute[] = element.attrs ? element.attrs : [];
 
-                await resolvers.elementResolverAsync(convertToParserElement(node));
+                await resolvers.elementResolverAsync(convertToParserElement(node as ParentNode));
 
                 const dataTypeAttribute = attributes.find(
                     (m) => m.name === parserConfiguration.modularContentElementData.dataType
@@ -129,10 +133,8 @@ export class AsyncNodeParser implements IAsyncParser<string> {
                     );
                 } else {
                     // process generic elements
-                    const innerHtml = serialize(node);
-                    if (innerHtml) {
-                        // only process node if its not empty
-                        await resolvers.genericElementResolverAsync(convertToParserElement(node));
+                    if (node) {
+                        await resolvers.genericElementResolverAsync(convertToParserElement(node as ParentNode));
                     }
                 }
 
@@ -140,7 +142,7 @@ export class AsyncNodeParser implements IAsyncParser<string> {
                 if (element.childNodes && element.childNodes.length) {
                     await this.processNodesAsync(
                         mainRichTextElement,
-                        getChildNodes(element),
+                        getChildNodes(element as DocumentFragment),
                         resolvers,
                         parsedItems,
                         linkedItems,

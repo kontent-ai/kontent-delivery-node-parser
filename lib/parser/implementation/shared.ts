@@ -7,11 +7,12 @@ import {
     IParserElement,
     IParserElementAttribute
 } from '@kentico/kontent-delivery';
-import { DocumentFragment, Element, parseFragment, serialize, Node } from 'parse5';
+import { parseFragment, serialize } from 'parse5';
+import { Element, DocumentFragment, ChildNode, ParentNode } from 'parse5/dist/cjs/tree-adapters/default';
 import * as striptags from 'striptags';
 
-export function getChildNodes(documentFragment: DocumentFragment | Element): Element[] {
-    return documentFragment.childNodes as Element[];
+export function getChildNodes(documentFragment: DocumentFragment): ChildNode[] {
+    return documentFragment.childNodes;
 }
 
 export function getLinkedItem(linkedItems: IContentItem[], itemCodename: string): IContentItem | undefined {
@@ -79,7 +80,7 @@ export function tryGetLink(
     return undefined;
 }
 
-export function convertToParserElement(node: Node): IParserElement {
+export function convertToParserElement(node: ParentNode): IParserElement {
     const attributes: IParserElementAttribute[] = [];
 
     let tagName: string = node.nodeName;
@@ -135,16 +136,26 @@ export function convertToParserElement(node: Node): IParserElement {
                 }
 
                 const rootNode = rootNodes[0];
-                const childNodes = rootNode.childNodes;
 
-                element.attrs = rootNode.attrs; //  preserve attributes from top node
-                element.childNodes = childNodes; // set resolved inner html
+                if (element.tagName.toLowerCase() === 'img') {
+                    // img element has to be set on parent node because replacing child nodes works
+                    // differently in self closing tags
+                    if (element.parentNode) {
+                        element.parentNode.childNodes = rootNodes;
+                    } else {
+                        throw Error(`Could not set html because of invalid parent node`);
+                    }
+                } else {
+                    element.childNodes = [rootNode];
+                }
             }
         },
         html: serialize(node),
         text: striptags(serialize(node)),
         attributes: attributes,
-        parentElement: (node as Element).parentNode ? convertToParserElement((node as Element).parentNode) : undefined,
+        parentElement: (node as Element).parentNode
+            ? convertToParserElement((node as Element).parentNode as ParentNode)
+            : undefined,
         sourceElement: node
     };
 }
