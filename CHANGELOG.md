@@ -4,9 +4,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [2.0.0](https://github.com/Kentico/kontent-delivery-node-parser/compare/v2.0.0-0...v2.0.0) (2022-06-24)
 
-## [2.0.0-0](https://github.com/Kentico/kontent-delivery-node-parser/compare/v1.1.0...v2.0.0-0) (2022-06-24)
-
-
 ### ⚠ BREAKING CHANGES
 
 * Updates dependencies and refactors code to use the parse5 on v7. This parse5 contains major changes to API and offers much improved performance.
