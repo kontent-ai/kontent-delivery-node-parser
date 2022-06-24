@@ -1,0 +1,65 @@
+{
+    "item": {
+        "system": {
+            "id": "b37fe61d-1b5e-46ee-9531-bb390fd63a81",
+            "name": "New Star wars ",
+            "codename": "new_star_wars_",
+            "language": "default",
+            "type": "article",
+            "collection": "default",
+            "sitemap_locations": [],
+            "last_modified": "2022-06-24T09:28:51.6246214Z",
+            "workflow_step": "published"
+        },
+        "elements": {
+            "title": {
+                "type": "text",
+                "name": "Title",
+                "value": "New star wars"
+            },
+            "text": {
+                "type": "rich_text",
+                "name": "Text",
+                "images": {},
+                "links": {
+                    "b37fe61d-1b5e-46ee-9531-bb390fd63a81": {
+                        "codename": "new_star_wars_",
+                        "type": "article",
+                        "url_slug": ""
+                    }
+                },
+                "modular_content": [],
+                "value": "<p>Having taken her first steps into the Jedi world, Rey joins Luke Skywalker on an adventure with Leia, Finn and Poe that <a data-item-id=\"b37fe61d-1b5e-46ee-9531-bb390fd63a81\" href=\"\">unlocks <strong>mysteries</strong> of the <em>Force</em></a> and secrets of the past.</p>"
+            },
+            "video": {
+                "type": "asset",
+                "name": "Video",
+                "value": [
+                    {
+                        "name": "Star wars trailer.mp4",
+                        "description": null,
+                        "type": "video/mp4",
+                        "size": 36568882,
+                        "url": "https://assets-us-01.kc-usercontent.com:443/0e257a79-bf4c-48b8-993d-9b9fa15c9703/6ec94e43-1519-4e16-bb04-4681951eb45f/Star%20wars%20trailer.mp4"
+                    }
+                ]
+            },
+            "sd_video_url": {
+                "type": "text",
+                "name": "SD Video Url",
+                "value": ""
+            },
+            "hd_video_url": {
+                "type": "text",
+                "name": "HD Video Url",
+                "value": ""
+            },
+            "uhd_video_url": {
+                "type": "text",
+                "name": "UHD Video Url",
+                "value": null
+            }
+        }
+    },
+    "modular_content": {}
+}

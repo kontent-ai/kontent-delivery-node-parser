@@ -117,6 +117,9 @@ export function convertToParserElement(node: ParentNode): IParserElement {
             }
         },
         setInnerHtml: (newHtml) => {
+            if (!newHtml) {
+                return;
+            }
             if ((node as Element).attrs) {
                 const element = node as Element;
                 // get serialized set of nodes from HTML
@@ -127,6 +130,9 @@ export function convertToParserElement(node: ParentNode): IParserElement {
             }
         },
         setOuterHtml: (newHtml) => {
+            if (!newHtml) {
+                return;
+            }
             if ((node as Element).attrs) {
                 const element = node as Element;
                 const rootNodes = parseFragment(newHtml).childNodes as Element[];

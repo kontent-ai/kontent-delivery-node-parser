@@ -19,6 +19,7 @@ import { getChildNodes, tryGetImage, tryGetLink, getLinkedItem, convertToParserE
 import { parseFragment, serialize } from 'parse5';
 import { Element, Node, TextNode, DocumentFragment, ParentNode } from 'parse5/dist/cjs/tree-adapters/default';
 import { Attribute } from 'parse5/dist/cjs/common/token';
+import striptags = require('striptags');
 
 export class AsyncNodeParser implements IAsyncParser<string> {
     async parseAsync(
@@ -229,8 +230,12 @@ export class AsyncNodeParser implements IAsyncParser<string> {
         // get original link text (the one inside <a> tag from response)
         let originalLinkText: string | undefined = undefined;
 
-        const linkTextNode = element.childNodes[0] as TextNode;
-        if (linkTextNode) {
+        if (element.childNodes.length) {
+            // handle cases when link is formatted
+            originalLinkText = striptags(serialize(element));
+        } else {
+            // link is not formatted, it's a single text node
+            const linkTextNode = element.childNodes[0] as TextNode;
             originalLinkText = linkTextNode.value;
         }
 

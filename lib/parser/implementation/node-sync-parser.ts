@@ -13,6 +13,7 @@ import {
     ParsedItemIndexReferenceWrapper,
     parserConfiguration
 } from '@kentico/kontent-delivery';
+import * as striptags from 'striptags';
 import { getChildNodes, tryGetImage, tryGetLink, getLinkedItem, convertToParserElement } from './shared';
 
 import { parseFragment, serialize } from 'parse5';
@@ -165,7 +166,6 @@ export class NodeParser implements IParser<string> {
     ): void {
         const attributes = element.attrs;
 
-
         if (element.nodeName !== parserConfiguration.imageElementData.nodeName) {
             // node is not an image
             return;
@@ -230,8 +230,12 @@ export class NodeParser implements IParser<string> {
         // get original link text (the one inside <a> tag from response)
         let originalLinkText: string | undefined = undefined;
 
-        const linkTextNode = element.childNodes[0] as TextNode;
-        if (linkTextNode) {
+        if (element.childNodes.length) {
+            // handle cases when link is formatted
+            originalLinkText = striptags(serialize(element));
+        } else {
+            // link is not formatted, it's a single text node
+            const linkTextNode = element.childNodes[0] as TextNode;
             originalLinkText = linkTextNode.value;
         }
 
