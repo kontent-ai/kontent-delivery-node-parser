@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-0](https://github.com/Kentico/kontent-delivery-node-parser/compare/v1.1.0...v2.0.0-0) (2022-06-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* Updates dependencies and refactors code to use the parse5 on v7. This parse5 contains major changes to API and offers much improved performance.
+
+### Features
+
+* Updates dependencies and refactors code to use the parse5 on v7. This parse5 contains major changes to API and offers much improved performance. ([0404e37](https://github.com/Kentico/kontent-delivery-node-parser/commit/0404e37109353924eff556df44ffcf4f98709b5f))
+
+
+### Bug Fixes
+
+* Adds support for parsing HTML within links (needed when links contain inner formatting) (fixes https://github.com/Kentico/kontent-delivery-sdk-js/issues/351) ([98ac0cd](https://github.com/Kentico/kontent-delivery-node-parser/commit/98ac0cd042824f0574651f9b19614ad35f2329b1))
+
 ## [1.1.0](https://github.com/Kentico/kontent-delivery-node-parser/compare/v1.1.0-0...v1.1.0) (2021-12-08)
 
 ## [1.1.0-0](https://github.com/Kentico/kontent-delivery-node-parser/compare/v1.0.0...v1.1.0-0) (2021-12-08)
