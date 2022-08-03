@@ -8,7 +8,7 @@ This is an alternative to built-in `browserParser` that comes native with the SD
 #### Usage
 
 ```typescript
-import { createRichTextHtmlResolver, createAsyncRichTextHtmlResolver } from '@kentico/kontent-delivery';
+import { createRichTextHtmlResolver, createAsyncRichTextHtmlResolver } from '@kontent-ai/delivery-sdk';
 import { nodeParser, asyncNodeParser } from '@kentico/kontent-delivery-node-parser';
 
 // transform rich text html into json

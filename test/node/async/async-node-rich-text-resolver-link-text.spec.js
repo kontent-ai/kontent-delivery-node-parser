@@ -1,4 +1,4 @@
-const KontentDelivery = require('@kentico/kontent-delivery');
+const KontentDelivery = require('@kontent-ai/delivery-sdk');
 const assert = require('assert');
 const formattedJson = require('../data/fake-formatted-link-response.json');
 const simpleJson = require('../data/fake-warrior-response.json');

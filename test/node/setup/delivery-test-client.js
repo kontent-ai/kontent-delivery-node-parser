@@ -1,5 +1,5 @@
-const KontentCore = require('@kentico/kontent-core');
-const KontentDelivery = require('@kentico/kontent-delivery');
+const KontentCore = require('@kontent-ai/core-sdk');
+const KontentDelivery = require('@kontent-ai/delivery-sdk');
 const testProjectId = 'delivery-project-id';
 
 const defaultPropertyNameResolver = (type, element) => {

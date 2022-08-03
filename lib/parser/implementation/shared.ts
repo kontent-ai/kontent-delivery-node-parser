@@ -6,7 +6,7 @@ import {
     ILink,
     IParserElement,
     IParserElementAttribute
-} from '@kentico/kontent-delivery';
+} from '@kontent-ai/delivery-sdk';
 import { parseFragment, serialize } from 'parse5';
 import { Element, DocumentFragment, ChildNode, ParentNode } from 'parse5/dist/cjs/tree-adapters/default';
 import * as striptags from 'striptags';

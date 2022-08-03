@@ -1,4 +1,4 @@
-const KontentDelivery = require('@kentico/kontent-delivery');
+const KontentDelivery = require('@kontent-ai/delivery-sdk');
 const assert = require('assert');
 const warriorJson = require('../data/fake-warrior-response.json');
 const nodeParserLib = require('../../../dist/cjs/index');

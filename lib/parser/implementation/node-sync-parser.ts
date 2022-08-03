@@ -12,7 +12,7 @@ import {
     IResolvedRichTextHtmlResult,
     ParsedItemIndexReferenceWrapper,
     parserConfiguration
-} from '@kentico/kontent-delivery';
+} from '@kontent-ai/delivery-sdk';
 import * as striptags from 'striptags';
 import { getChildNodes, tryGetImage, tryGetLink, getLinkedItem, convertToParserElement } from './shared';
 
