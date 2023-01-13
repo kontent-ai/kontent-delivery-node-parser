@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [3.1.0](https://github.com/kontent-ai/kontent-delivery-node-parser/compare/v3.0.0...v3.1.0) (2023-01-13)
 
+### Bug Fixes
+
+* Fixes module exports
 
 ### Features
 
