@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/kontent-ai/kontent-delivery-node-parser/compare/v3.0.0...v3.1.0) (2023-01-13)
+
+
+### Features
+
+* updates all deps ([9eb7656](https://github.com/kontent-ai/kontent-delivery-node-parser/commit/9eb765660f9ea8537103f506f37e0a3a6c261324))
+
 ## [3.0.0](https://github.com/kontent-ai/kontent-delivery-node-parser/compare/v2.0.1...v3.0.0) (2022-08-03)
 
 ### [2.0.1](https://github.com/Kentico/kontent-delivery-node-parser/compare/v2.0.0...v2.0.1) (2022-06-24)
