@@ -14,7 +14,7 @@ import {
     parserConfiguration
 } from '@kontent-ai/delivery-sdk';
 import * as striptags from 'striptags';
-import { getChildNodes, tryGetImage, tryGetLink, getLinkedItem, convertToParserElement } from './shared';
+import { getChildNodes, convertToParserElement, prepareData, IPreparedData } from './shared';
 
 import { parseFragment, serialize } from 'parse5';
 import { Element, Node, TextNode, DocumentFragment, ParentNode } from 'parse5/dist/cjs/tree-adapters/default';
@@ -36,7 +36,7 @@ export class NodeParser implements IParser<string> {
                 linkedItems: [],
                 images: []
             },
-            linkedItems,
+            prepareData(mainRichTextElement, linkedItems),
             new ParsedItemIndexReferenceWrapper(0),
             null
         );
@@ -53,7 +53,7 @@ export class NodeParser implements IParser<string> {
         html: string,
         resolvers: IParseResolvers,
         parsedItems: IParsedObjects,
-        linkedItems: IContentItem[],
+        preparedData: IPreparedData,
         linkedItemIndex: ParsedItemIndexReferenceWrapper = new ParsedItemIndexReferenceWrapper(0),
         parentElement: Element | null
     ): IResolvedRichTextHtmlResult {
@@ -65,7 +65,7 @@ export class NodeParser implements IParser<string> {
             getChildNodes(documentFragment),
             resolvers,
             parsedItems,
-            linkedItems,
+            preparedData,
             linkedItemIndex,
             parentElement
         );
@@ -86,7 +86,7 @@ export class NodeParser implements IParser<string> {
         nodes: Node[],
         resolvers: IParseResolvers,
         parsedItems: IParsedObjects,
-        linkedItems: IContentItem[],
+        preparedData: IPreparedData,
         linkedItemIndex: ParsedItemIndexReferenceWrapper = new ParsedItemIndexReferenceWrapper(0),
         parentElement: Element | null
     ): IParsedObjects {
@@ -108,7 +108,7 @@ export class NodeParser implements IParser<string> {
                         element,
                         resolvers,
                         parsedItems,
-                        linkedItems,
+                        preparedData,
                         linkedItemIndex
                     );
                 } else if (node.nodeName.toLowerCase() === parserConfiguration.linkElementData.nodeName.toLowerCase()) {
@@ -117,7 +117,7 @@ export class NodeParser implements IParser<string> {
                         element,
                         resolvers,
                         parsedItems,
-                        linkedItems,
+                        preparedData,
                         linkedItemIndex
                     );
                 } else if (
@@ -128,7 +128,7 @@ export class NodeParser implements IParser<string> {
                         element,
                         resolvers,
                         parsedItems,
-                        linkedItems,
+                        preparedData,
                         linkedItemIndex
                     );
                 } else {
@@ -145,7 +145,7 @@ export class NodeParser implements IParser<string> {
                         getChildNodes(element as DocumentFragment),
                         resolvers,
                         parsedItems,
-                        linkedItems,
+                        preparedData,
                         linkedItemIndex,
                         parentElement
                     );
@@ -161,7 +161,7 @@ export class NodeParser implements IParser<string> {
         element: Element,
         resolvers: IParseResolvers,
         parsedItems: IParsedObjects,
-        linkedItems: IContentItem[],
+        preparedData: IPreparedData,
         linkedItemIndex: ParsedItemIndexReferenceWrapper
     ): void {
         const attributes = element.attrs;
@@ -193,7 +193,7 @@ export class NodeParser implements IParser<string> {
         resolvers.imageResolver(
             convertToParserElement(element),
             imageObject.imageId,
-            tryGetImage(mainRichTextElement, linkedItems, imageObject.imageId)
+            preparedData.imagesById[imageObject.imageId]
         );
     }
 
@@ -202,7 +202,7 @@ export class NodeParser implements IParser<string> {
         element: Element,
         resolvers: IParseResolvers,
         parsedItems: IParsedObjects,
-        linkedItems: IContentItem[],
+        preparedData: IPreparedData,
         linkedItemIndex: ParsedItemIndexReferenceWrapper
     ): void {
         const attributes = element.attrs;
@@ -243,7 +243,7 @@ export class NodeParser implements IParser<string> {
             convertToParserElement(element),
             linkObject.dataItemId,
             originalLinkText ?? '',
-            tryGetLink(mainRichTextElement, linkedItems, linkObject.dataItemId)
+            preparedData.linksById[linkObject.dataItemId]
         );
     }
 
@@ -252,7 +252,7 @@ export class NodeParser implements IParser<string> {
         element: Element,
         resolvers: IParseResolvers,
         parsedItems: IParsedObjects,
-        linkedItems: IContentItem[],
+        preparedData: IPreparedData,
         linkedItemIndex: ParsedItemIndexReferenceWrapper
     ): void {
         const attributes = element.attrs;
@@ -310,7 +310,7 @@ export class NodeParser implements IParser<string> {
                 convertToParserElement(element),
                 linkItemContentObject.dataCodename,
                 linkedItemIndex.index,
-                getLinkedItem(linkedItems, linkItemContentObject.dataCodename)
+                preparedData.itemsByCodename[linkItemContentObject.dataCodename]
             );
 
             // increment index

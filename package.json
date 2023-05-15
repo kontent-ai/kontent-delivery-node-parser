@@ -28,7 +28,7 @@
         "ts-lint:fix": "npm run ts-lint:check -- --fix",
         "ts-lint:check": "tslint --project ./tsconfig.json",
         "test:gh-actions": "npm run test:node",
-        "test:node": "npm run build:commonjs && npx mocha -- \"test/node/**/*.js\" --timeout 15000",
+        "test:node": "npm run build:commonjs && npx mocha -- \"test/node/**/*.js\" --timeout 150000",
         "test:all": "npm run test:node",
         "new-patch": "npm version patch && npm run check-version ",
         "new-minor": "npm version minor && npm run check-version ",

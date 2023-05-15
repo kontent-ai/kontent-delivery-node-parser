@@ -1,15 +1,33 @@
 import {
     IContentItem,
     Elements,
-    IRichTextImage,
     ElementType,
     ILink,
     IParserElement,
-    IParserElementAttribute
+    IParserElementAttribute,
+    IRichTextImage
 } from '@kontent-ai/delivery-sdk';
 import { parseFragment, serialize } from 'parse5';
 import { Element, DocumentFragment, ChildNode, ParentNode } from 'parse5/dist/cjs/tree-adapters/default';
 import * as striptags from 'striptags';
+
+export interface IPreparedData {
+    itemsByCodename: ILinkedItemsByCodename;
+    linksById: ILinksById;
+    imagesById: IImagesById;
+}
+
+export interface ILinkedItemsByCodename {
+    [codename: string]: IContentItem | undefined;
+}
+
+export interface ILinksById {
+    [id: string]: ILink | undefined;
+}
+
+export interface IImagesById {
+    [id: string]: IRichTextImage | undefined;
+}
 
 export function getChildNodes(documentFragment: DocumentFragment): ChildNode[] {
     return documentFragment.childNodes;
@@ -22,62 +40,44 @@ export function getLinkedItem(linkedItems: IContentItem[], itemCodename: string)
     return linkedItems.find((m) => m.system.codename === itemCodename);
 }
 
-export function tryGetImage(
-    inputElement: Elements.RichTextElement,
-    linkedItems: IContentItem[],
-    imageId: string
-): IRichTextImage | undefined {
-    const elementImage = inputElement.images.find((m) => m.imageId === imageId);
-    if (elementImage) {
-        return elementImage;
+export function prepareData(mainRichTextElement: Elements.RichTextElement, linkedItems: IContentItem[]): IPreparedData {
+    const preparedData: IPreparedData = {
+        imagesById: {},
+        itemsByCodename: {},
+        linksById: {}
+    };
+
+    for (const image of mainRichTextElement.images) {
+        preparedData.imagesById[image.imageId] = image;
     }
 
-    // try to find image in all linked items
-    if (linkedItems) {
-        for (const linkedItem of linkedItems) {
-            for (const elementKey of Object.keys(linkedItem.elements)) {
-                const element = linkedItem.elements[elementKey];
-                if (element && element.type === ElementType.RichText) {
-                    const richTextElement = element as Elements.RichTextElement;
-                    const richTextElementImage = richTextElement.images.find((m) => m.imageId === imageId);
-                    if (richTextElementImage) {
-                        return richTextElementImage;
-                    }
+    for (const link of mainRichTextElement.links) {
+        preparedData.linksById[link.linkId] = link;
+    }
+
+    for (const linkedItem of linkedItems) {
+        preparedData.itemsByCodename[linkedItem.system.codename] = linkedItem;
+
+        for (const elementKey of Object.keys(linkedItem.elements)) {
+            const element = linkedItem.elements[elementKey];
+            if (element && element.type === ElementType.RichText) {
+                const richTextElement = element as Elements.RichTextElement;
+
+                const images = richTextElement.images;
+                const links = richTextElement.links;
+
+                for (const image of images) {
+                    preparedData.imagesById[image.imageId] = image;
+                }
+
+                for (const link of links) {
+                    preparedData.linksById[link.linkId] = link;
                 }
             }
         }
     }
 
-    return undefined;
-}
-
-export function tryGetLink(
-    inputElement: Elements.RichTextElement,
-    linkedItems: IContentItem[],
-    linkId: string
-): ILink | undefined {
-    const elementLink = inputElement.links.find((m) => m.linkId === linkId);
-    if (elementLink) {
-        return elementLink;
-    }
-
-    // try to find image in all linked items
-    if (linkedItems) {
-        for (const linkedItem of linkedItems) {
-            for (const elementKey of Object.keys(linkedItem.elements)) {
-                const element = linkedItem.elements[elementKey];
-                if (element && element.type === ElementType.RichText) {
-                    const richTextElement = element as Elements.RichTextElement;
-                    const richTextElementLink = richTextElement.links.find((m) => m.linkId === linkId);
-                    if (richTextElementLink) {
-                        return richTextElementLink;
-                    }
-                }
-            }
-        }
-    }
-
-    return undefined;
+    return preparedData;
 }
 
 export function convertToParserElement(node: ParentNode): IParserElement {
