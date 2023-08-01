@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://github.com/kontent-ai/kontent-delivery-node-parser/compare/v4.0.0...v4.1.0) (2023-08-01)
+
+
+### Features
+
+* updates deps, migrates to eslint ([9add20d](https://github.com/kontent-ai/kontent-delivery-node-parser/commit/9add20de48323cdf501811f6658082e68b2a2f3a))
+
 ## [4.0.0](https://github.com/kontent-ai/kontent-delivery-node-parser/compare/v3.1.0...v4.0.0) (2023-04-12)
 
 
