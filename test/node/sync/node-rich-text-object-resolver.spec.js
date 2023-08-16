@@ -24,4 +24,11 @@ describe('Node rich text object resolver', () => {
   it(`Expect correct number of root children nodes`, () => {
     assert.ok(resolvedData.data.children.length === expectedRootChildrenNodes);
   });
+
+  it(`Expect text nodes should be extracted`, () => {
+    const textChildren = Object.values(resolvedData.data.children).filter(({ tag }) => tag === '#text');
+    const filledTextChildren = textChildren.filter(({ data: { text } }) => !!text);
+
+    assert.ok(textChildren.length === filledTextChildren.length);
+  });
 });
