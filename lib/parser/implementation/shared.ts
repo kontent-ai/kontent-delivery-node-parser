@@ -8,7 +8,7 @@ import {
     IRichTextImage
 } from '@kontent-ai/delivery-sdk';
 import { parseFragment, serialize } from 'parse5';
-import { Element, DocumentFragment, ChildNode, ParentNode } from 'parse5/dist/cjs/tree-adapters/default';
+import { Element, DocumentFragment, ChildNode, ParentNode, TextNode } from 'parse5/dist/cjs/tree-adapters/default';
 import * as striptags from 'striptags';
 
 export interface IPreparedData {
@@ -157,7 +157,7 @@ export function convertToParserElement(node: ParentNode): IParserElement {
             }
         },
         html: serialize(node),
-        text: striptags(serialize(node)),
+        text: tagName === '#text' ? (node as unknown as TextNode).value : striptags(serialize(node)),
         attributes: attributes,
         parentElement: (node as Element).parentNode
             ? convertToParserElement((node as Element).parentNode as ParentNode)
