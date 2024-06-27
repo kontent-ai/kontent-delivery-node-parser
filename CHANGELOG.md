@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.1.4](https://github.com/kontent-ai/kontent-delivery-node-parser/compare/v4.1.3...v4.1.4) (2024-06-27)
+
 ### [4.1.3](https://github.com/kontent-ai/kontent-delivery-node-parser/compare/v4.1.2...v4.1.3) (2024-05-30)
 
 
