@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.1.5](https://github.com/kontent-ai/kontent-delivery-node-parser/compare/v4.1.4...v4.1.5) (2024-07-31)
+
+
+### Bug Fixes
+
+* upgrade @kontent-ai/delivery-sdk from 14.9.0 to 14.10.0 ([46643dc](https://github.com/kontent-ai/kontent-delivery-node-parser/commit/46643dc0a3921632f48410d8f5b43a8ecf828162))
+
 ### [4.1.4](https://github.com/kontent-ai/kontent-delivery-node-parser/compare/v4.1.3...v4.1.4) (2024-06-27)
 
 ### [4.1.3](https://github.com/kontent-ai/kontent-delivery-node-parser/compare/v4.1.2...v4.1.3) (2024-05-30)
