@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.1.6](https://github.com/kontent-ai/kontent-delivery-node-parser/compare/v4.1.5...v4.1.6) (2024-08-27)
+
+
+### Bug Fixes
+
+* package.json & package-lock.json to reduce vulnerabilities ([de729da](https://github.com/kontent-ai/kontent-delivery-node-parser/commit/de729daa0b0db5f00c366437b88e9bd1729f9356))
+
 ### [4.1.5](https://github.com/kontent-ai/kontent-delivery-node-parser/compare/v4.1.4...v4.1.5) (2024-07-31)
 
 
